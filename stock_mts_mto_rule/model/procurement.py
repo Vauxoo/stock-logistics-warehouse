@@ -126,3 +126,31 @@ class ProcurementOrder(models.Model):
                 mto_proc = procurement.copy(mto_vals)
                 mto_proc.run()
         return super(ProcurementOrder, self)._run(procurement)
+
+
+class StockMove(models.Model):
+
+    _inherit = 'stock.move'
+
+    @api.multi
+    def action_cancel(self):
+        """
+            Overwrite this method because when cancel
+            move of MO/PO created by mts-mto rule
+            also cancel all move related to SO(eg, pick, pack, out)
+        """
+
+        for move in self:
+            if move.move_dest_id and move.propagate:
+                for move_origin in move.move_orig_ids:
+                    if move_origin.procurement_id.rule_id.action in (
+                            'buy', 'manufacture'):
+                        for procurement in move_origin.procurement_id.\
+                                group_id.procurement_ids:
+                            if procurement.rule_id.action == 'split_procurement' and\
+                                    procurement.product_id == move.product_id:
+                                # move_dest_id is set false to avoid cancel
+                                # another picking
+                                move.write({'move_dest_id': False})
+
+        return super(StockMove, self).action_cancel()
