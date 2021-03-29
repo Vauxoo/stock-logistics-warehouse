@@ -14,7 +14,7 @@ class InventoryLine(models.Model):
         string="Adjustment cost", compute="_compute_adjustment_cost", store=True
     )
 
-    @api.depends("difference_qty", "inventory_id.state")
+    @api.depends("inventory_id.state")
     def _compute_adjustment_cost(self):
         for record in self:
             record.adjustment_cost = (
