@@ -6,7 +6,7 @@
     "summary": "Establish a removal priority on stock locations.",
     "version": "14.0.1.0.0",
     "author": "ForgeFlow, " "Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/stock-logistics-warehouse",
+    "website": "https://github.com/OCA/account-financial-tools",
     "category": "Warehouse",
     "depends": ["stock"],
     "data": [
