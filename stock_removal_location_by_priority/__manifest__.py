@@ -4,11 +4,11 @@
 {
     "name": "Stock Removal Location by Priority",
     "summary": "Establish a removal priority on stock locations.",
-    "version": "14.0.1.0.0",
+    "version": "17.0.1.0.0",
     "author": "ForgeFlow, " "Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/account-financial-tools",
     "category": "Warehouse",
-    "depends": ["stock"],
+    "depends": ["stock", "product_expiry"],
     "data": [
         "security/stock_security.xml",
         "views/res_config_settings_views.xml",

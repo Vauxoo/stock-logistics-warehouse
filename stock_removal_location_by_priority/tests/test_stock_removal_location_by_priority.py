@@ -9,7 +9,7 @@ from odoo.tests.common import TransactionCase
 
 class TestStockRemovalLocationByPriority(TransactionCase):
     def setUp(self):
-        super(TestStockRemovalLocationByPriority, self).setUp()
+        super().setUp()
         self.res_users_model = self.env["res.users"]
         self.stock_location_model = self.env["stock.location"]
         self.stock_warehouse_model = self.env["stock.warehouse"]
@@ -93,7 +93,7 @@ class TestStockRemovalLocationByPriority(TransactionCase):
                 "picking_type_id": picking_type.id,
                 "location_id": location.id,
                 "location_dest_id": location_dest.id,
-                "move_lines": [
+                "move_ids": [
                     (
                         0,
                         0,
@@ -126,7 +126,6 @@ class TestStockRemovalLocationByPriority(TransactionCase):
         picking_1 = self._create_picking(
             self.picking_internal, self.stock, self.stock_2, 5
         )
-        picking_1.flush()
         picking_1.action_confirm()
         picking_1.action_assign()
 
@@ -151,7 +150,6 @@ class TestStockRemovalLocationByPriority(TransactionCase):
         picking_1 = self._create_picking(
             self.picking_internal, self.stock, self.stock_2, 5
         )
-        picking_1.flush()
         picking_1.action_confirm()
         picking_1.action_assign()
 
