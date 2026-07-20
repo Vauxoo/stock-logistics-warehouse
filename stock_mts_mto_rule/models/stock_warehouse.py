@@ -38,6 +38,35 @@ class StockWarehouse(models.Model):
             return _("MTS+MTO")
         return super(StockWarehouse, self)._get_route_name(route_type)
 
+    def _get_mts_mto_route(self):
+        """Return the global "Make To Order + Make To Stock" route, creating
+        it (and binding its xml_id) if it doesn't exist yet.
+
+        ``_find_global_route`` (create=False) assumes this module's own
+        data/stock_data.xml has already run, but that isn't guaranteed:
+        stock_mts_mto_rule has no dependency relationship with modules like
+        purchase_stock, whose post_init_hook can trigger a warehouse route
+        rebuild before this module's data file has loaded, raising a
+        UserError instead of self-healing. _load_records uses the same
+        create-or-get-by-xml_id mechanism as loading the XML data file, so
+        if that file loads afterwards it will find the xml_id already bound
+        and update this record in place instead of duplicating it.
+        """
+        return self.env["stock.route"]._load_records(
+            [
+                {
+                    "xml_id": "stock_mts_mto_rule.route_mto_mts",
+                    "values": {
+                        "name": _("Make To Order + Make To Stock"),
+                        "sequence": 5,
+                        "product_selectable": True,
+                        "company_id": False,
+                    },
+                    "noupdate": True,
+                }
+            ]
+        )
+
     def _get_global_route_rules_values(self):
         rule = self.get_rules_dict()[self.id][self.delivery_steps]
         rule = [r for r in rule if r.from_loc == self.lot_stock_id][0]
@@ -55,10 +84,7 @@ class StockWarehouse(models.Model):
                         "company_id": self.company_id.id,
                         "auto": "manual",
                         "propagate_cancel": True,
-                        "route_id": self._find_global_route(
-                            "stock_mts_mto_rule.route_mto_mts",
-                            _("Make To Order + Make To Stock"),
-                        ).id,
+                        "route_id": self._get_mts_mto_route().id,
                     },
                     "update_values": {
                         "active": self.mto_mts_management,
